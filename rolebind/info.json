@@ -1,0 +1,10 @@
+{
+	"author": ["Atmos#0101", "snowflake"],
+	"install_msg": "You have installed RoleBind.",
+	"description": "Organise user roles by adding spacers. Create a \"spacer\" role to add whenever a role such as reaction roles or manually added tag roles.",
+    "short": "Organise user roles by adding spacers.",
+    "hidden": false,
+	"tags": ["utility"],
+    "requirements": [],
+    "end_user_data_statement": "This cog does not store any End User Data."
+  }
