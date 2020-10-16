@@ -1,0 +1,8 @@
+{
+    "author" : ["Atmos"],
+    "install_msg" : "Custom cogs made or comissioned for my use! I have nothing else setup to manage or distribute these.",
+    "name" : "Atom-cogs",
+    "short" : "Cogs for Atom-bot.",
+    "description" : "Custom cogs made or comissioned for my use! I have nothing else setup to manage or distribute these.",
+    "tags" : ["Fun", "Images", "Utility", "Trigger"]
+}
