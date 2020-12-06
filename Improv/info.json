@@ -1,0 +1,10 @@
+{
+	"author": ["Atmos#0101", "hengoo#0001"],
+	"install_msg": "You have installed Improv cog.",
+	"description": "Improv cog manages a channel where users type one word per message in conjunction with others to form a story.",
+    "short": "Improv story cog.",
+    "hidden": false,
+	"tags": ["Fun"],
+    "requirements": [],
+    "end_user_data_statement": "This cog does not store any End User Data."
+  }
