@@ -68,6 +68,7 @@ class Improv(commands.Cog):
         post_sentence = preface_list[random_preface] + self.latest_sentence
         await message.channel.send(post_sentence)
         self.latest_sentence = ''
+        self.last_user = this_user
         return
 
     # message is approved, add it to saved sentence
