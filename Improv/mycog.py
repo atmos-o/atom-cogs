@@ -79,4 +79,3 @@ class Improv(commands.Cog):
     # save new user as last user
     self.last_user = this_user
     return
-      
