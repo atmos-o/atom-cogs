@@ -7,7 +7,7 @@ class Improv(commands.Cog):
     self.bot = bot
 
     # variable declaration
-    self.improv_channel = '661816778262839304'
+    self.improv_channel = '785229808454991892'
     self.last_user = ''
     self.latest_sentence = ''
 
@@ -59,7 +59,7 @@ class Improv(commands.Cog):
       return
 
     # detect punctuation, post sentence, and reset saved sentence
-    preface_list = ["And Albert Einstein said: ", 'A new scientific study shows that: ', 'Everyone learned this as a child: ', 'Deep in the Mormon scriptures, it tells us that: ', 'The runes reveal the truth that: ', "Scewt signals in sign language: ", "After hours of thought, Godlike realizes that: ", "Haunter's latest tattoo: ", "Scientists have just translated this secret alien message: ", "Linguists have just decoded the Nazis' last secret: ", "Paul Revere rides down the street exclaiming: ", "Steven Hawking's last words: ", "Intelligence has just intercepted Sierra's latest DM to Atmos: ", "Donald Trump approves this message: ", "*swoon* Boy of the week snapped me this: ", "Breaking news: ", "The letters in the alphabet soup form a message: ", "The tag inside of Koala's fursuit says: ", "Tripping on meth, Bryn screams: ", "In feces, Bryn spells out a special message on the bottom of the pool: "]
+    preface_list = ["And Albert Einstein said: ", 'A new scientific study shows that: ', 'Everyone learned this as a child: ', 'Deep in the Mormon scriptures, it tells us that: ', 'The runes reveal the truth that: ', "Scewt signals in sign language: ", "After hours of thought, Godlike realizes that: ", "Haunter's latest tattoo: ", "Scientists have just translated this secret alien message: ", "Linguists have just decoded the Nazis' last secret: ", "Paul Revere rides down the street exclaiming: ", "Steven Hawking's last words: ", "Intelligence has just intercepted Sierra's latest DM to Atmos: ", "Donald Trump approves this message: ", "*swoon* Boy of the week snapped me this: ", "Breaking news: ", "The letters in the alphabet soup form a message: ", "The tag inside of Koala's fursuit says: ", "Tripping on meth, Bryn screams: ", "In feces, Bryn spells out a special message on the bottom of the pool: ", "Linda screams to the Warzone kiddies: "]
     punctuation_list = ['?', '!', '.', '....']
     for punctuation in punctuation_list:
       if message_content == punctuation:
@@ -72,8 +72,8 @@ class Improv(commands.Cog):
 
     # message is approved, add it to saved sentence
     if len(self.latest_sentence) == 0:
-      message_content[0] = message_content[0].upper()
-      self.latest_sentence = message_content
+      first_word = message_content[0].upper() + message_content[1:]
+      self.latest_sentence = first_word
     else:
       self.latest_sentence += ' ' + message_content
     # save new user as last user
