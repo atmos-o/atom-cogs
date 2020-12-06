@@ -7,7 +7,7 @@ class Improv(commands.Cog):
     self.bot = bot
 
     # variable declaration
-    self.improv_channel = '661816778262839304'
+    self.improv_channel = '785229808454991892'
     self.last_user = ''
     self.latest_sentence = ''
 
