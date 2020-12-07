@@ -11,7 +11,7 @@ class Improv(commands.Cog):
     self.improv_channel = '785229808454991892'
     self.last_user = ''
     self.latest_sentence = ''
-    self.blacklist = ['220172093747232770, 342787250364350465']
+    self.blacklist = ['220172093747232770', '342787250364350465']
     self.last_message_time = time.time()
 
   # message listener
