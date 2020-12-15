@@ -1,0 +1,10 @@
+{
+	"author": ["Atmos#0101", "hengoo#0001"],
+	"install_msg": "Cock measuring time.",
+	"description": "Get a random measurement of your penis that persists for a month. And then await to either boast or cry about your new one each month",
+    "short": "Get the length of your penis",
+    "hidden": false,
+    "tags": ["fun"],
+    "requirements": [],
+    "end_user_data_statement": "This cog does not store any End User Data."
+  }
