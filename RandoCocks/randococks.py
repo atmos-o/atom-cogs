@@ -3,7 +3,7 @@ from redbot.core.bot import Red
 import random
 import datetime
 
-class randococks(commands.Cog):
+class RandoCocks(commands.Cog):
   def __init__(self, bot: Red):
     self.bot = bot
     self.middle_list = ['has', 'is packing', 'is endowed with', 'wields', 'is hiding']
