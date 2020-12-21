@@ -4,7 +4,7 @@ import random
 import datetime
 from redbot.core import Config
 
-class RandoCocks(commands.Cog):
+class randococks(commands.Cog):
   def __init__(self, bot: Red):
     self.bot = bot
     self.config = Config.get_conf(self, identifier=1027)
