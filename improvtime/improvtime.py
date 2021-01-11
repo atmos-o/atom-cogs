@@ -15,11 +15,12 @@ class ImprovTime(commands.Cog):
 
     @commands.Cog.listener("on_message")
     async def _message_listener(self, message: discord.Message):
+        if not message.guild:
+            return
         story_channel = await self.config.guild(message.guild).channel()
 
         # Ignore these messages
         if (
-            not message.guild or  # Message not in a guild
             message.channel.id != story_channel or  # Message not in story channel
             await self.bot.cog_disabled_in_guild(self, message.guild) or  # Cog disabled in guild
             not await self.config.guild(message.guild).toggle() or  # ImprovTime toggled off

@@ -1,5 +1,7 @@
 from redbot.core import commands, Config
 import discord
+from copy import copy
+import datetime
 
 
 class Counting(commands.Cog):
@@ -8,16 +10,17 @@ class Counting(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=14000605, force_registration=True)
-        default_guild = {"toggle": True, "channel": None, "counter": 0, "role": None, "assignrole": False, "allowrepeats": False, "deleted": None}
+        default_guild = {"toggle": True, "channel": None, "counter": 0, "role": None, "assignrole": False, "allowrepeats": False, "deleted": None, "penalty": (None, None), "wrong": {}}
         self.config.register_guild(**default_guild)
 
     @commands.Cog.listener("on_message")
     async def _message_listener(self, message: discord.Message):
+        if not message.guild:
+            return
         counting_channel = await self.config.guild(message.guild).channel()
 
         # Ignore these messages
         if (
-            not message.guild or  # Message not in a guild
             message.channel.id != counting_channel or  # Message not in counting channel
             await self.bot.cog_disabled_in_guild(self, message.guild) or  # Cog disabled in guild
             not await self.config.guild(message.guild).toggle() or  # Counting toggled off
@@ -27,12 +30,12 @@ class Counting(commands.Cog):
             return
 
         counter = await self.config.guild(message.guild).counter()
+        to_delete = False
         # Delete these messages
         try:
             # Incorrect number
-            if not (int(message.content.strip())-1 == counter):
-                await self.config.guild(message.guild).deleted.set(message.id)
-                return await message.delete()
+            if not (int(message.content.strip().split()[0])-1 == counter):
+                to_delete = True
 
             # User repeated and allow repeats is off
             if not await self.config.guild(message.guild).allowrepeats():
@@ -43,12 +46,29 @@ class Counting(commands.Cog):
                     if not last_m.author.bot:
                         found = True
                 if last_m.author.id == message.author.id:
-                    await self.config.guild(message.guild).deleted.set(message.id)
-                    return await message.delete()
+                    to_delete = True
 
-        except ValueError:  # Message contains non-numerical characters
+        except ValueError:  # No number as first word of message
+            to_delete = True
+
+        if to_delete:
             await self.config.guild(message.guild).deleted.set(message.id)
-            return await message.delete()
+            msg_copy = copy(message)
+            await message.delete()
+            penalty = await self.config.guild(message.guild).penalty()
+            async with self.config.guild(message.guild).wrong() as wrong:
+                try:
+                    wrong[str(message.author.id)] += 1
+                except KeyError:
+                    wrong[str(message.author.id)] = 1
+                if wrong[str(message.author.id)] >= penalty[0] and message.author.id != message.guild.owner.id:
+                    channel_mute = self.bot.get_command("channelmute")
+                    message.author = message.guild.owner
+                    ctx = await self.bot.get_context(msg_copy)
+                    if channel_mute is not None:
+                        await channel_mute(ctx=ctx, users=[message.author], time_and_reason={"duration": datetime.timedelta(seconds=penalty[1]), "reason": "Counting: too many wrong counts"})
+                    wrong[str(message.author.id)] = 0
+            return
 
         await self.config.guild(message.guild).counter.set(counter+1)
 
@@ -135,7 +155,7 @@ class Counting(commands.Cog):
 
     @counting.command(name="assignrole")
     async def _assignrole(self, ctx: commands.Context, true_or_false: bool):
-        """Toggle whether to assign a role to the most recent user to count."""
+        """Toggle whether to assign a role to the most recent user to count (requires add/remove role perms)."""
         if not await self.config.guild(ctx.guild).role():
             return await ctx.send("Please set a role first using `[p]counting role <role>`!")
         await self.config.guild(ctx.guild).assignrole.set(true_or_false)
@@ -145,6 +165,12 @@ class Counting(commands.Cog):
     async def _allow_repeats(self, ctx: commands.Context, true_or_false: bool):
         """Toggle whether users can count multiple times in a row."""
         await self.config.guild(ctx.guild).allowrepeats.set(true_or_false)
+        return await ctx.tick()
+
+    @counting.command(name="penalty")
+    async def _penalty(self, ctx: commands.Context, wrong: int = None, mute_time_in_seconds: int = None):
+        """Mute users for a specified amount of time if they count wrong x times in a row (leave both values empty to turn off, requires Core `mutes` to be loaded)."""
+        await self.config.guild(ctx.guild).penalty.set((wrong, mute_time_in_seconds))
         return await ctx.tick()
 
     @counting.command(name="view")
@@ -158,5 +184,6 @@ class Counting(commands.Cog):
             **Role:** {ctx.guild.get_role(settings["role"]).mention if settings["role"] is not None else None}
             **Allow Repeats:** {settings["allowrepeats"]}
             **Assign Role:** {settings["assignrole"]}
+            **Wrong Count Penalty:** {f'ChannelMute for {settings["penalty"][1]}s if {settings["penalty"][0]} wrong tries in a row' if settings["penalty"][0] and settings["penalty"][1] else "Not Set"}
             """
         await ctx.send(embed=discord.Embed(title="Counting Settings", color=await ctx.embed_color(), description=desc))
