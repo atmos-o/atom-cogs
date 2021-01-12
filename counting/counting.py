@@ -10,8 +10,9 @@ class Counting(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=14000605, force_registration=True)
-        default_guild = {"toggle": True, "channel": None, "counter": 0, "role": None, "assignrole": False, "allowrepeats": False, "deleted": None, "penalty": (None, None), "wrong": {}}
+        default_guild = {"toggle": True, "channel": None, "counter": 0, "role": None, "assignrole": False, "allowrepeats": False, "penalty": (None, None), "wrong": {}}
         self.config.register_guild(**default_guild)
+        self.deleted = []
 
     @commands.Cog.listener("on_message")
     async def _message_listener(self, message: discord.Message):
@@ -52,7 +53,7 @@ class Counting(commands.Cog):
             to_delete = True
 
         if to_delete:
-            await self.config.guild(message.guild).deleted.set(message.id)
+            self.deleted.append(message.id)
             msg_copy = copy(message)
             await message.delete()
             penalty = await self.config.guild(message.guild).penalty()
@@ -110,7 +111,7 @@ class Counting(commands.Cog):
         # Also ignore these
         try:
             _ = int(message.content.strip())
-            if message.id == await self.config.guild(message.guild).deleted():
+            if message.id in self.deleted:
                 return
         except ValueError:  # Message contains non-numerical characters
             return
@@ -171,6 +172,12 @@ class Counting(commands.Cog):
     async def _penalty(self, ctx: commands.Context, wrong: int = None, mute_time_in_seconds: int = None):
         """Mute users for a specified amount of time if they count wrong x times in a row (leave both values empty to turn off, requires Core `mutes` to be loaded)."""
         await self.config.guild(ctx.guild).penalty.set((wrong, mute_time_in_seconds))
+        return await ctx.tick()
+
+    @counting.command(name="clear")
+    async def _clear(self, ctx: commands.Context):
+        """Clear & reset the current Counting settings."""
+        await self.config.guild(ctx.guild).clear()
         return await ctx.tick()
 
     @counting.command(name="view")
