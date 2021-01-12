@@ -62,9 +62,9 @@ class Counting(commands.Cog):
                     wrong[str(message.author.id)] += 1
                 except KeyError:
                     wrong[str(message.author.id)] = 1
-                if wrong[str(message.author.id)] >= penalty[0] and message.author.id != message.guild.owner.id:
+                if wrong[str(message.author.id)] >= penalty[0] and message.author.id != message.guild.owner.id and not message.author.guild_permissions.administrator:
                     channel_mute = self.bot.get_command("channelmute")
-                    message.author = message.guild.owner
+                    msg_copy.author = message.guild.owner
                     ctx = await self.bot.get_context(msg_copy)
                     if channel_mute is not None:
                         await channel_mute(ctx=ctx, users=[message.author], time_and_reason={"duration": datetime.timedelta(seconds=penalty[1]), "reason": "Counting: too many wrong counts"})
